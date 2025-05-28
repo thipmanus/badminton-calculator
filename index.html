@@ -1,0 +1,50 @@
+<div class="container">
+  <h1>คำนวณค่ากลุ่มแบดมินตัน</h1>
+
+  <div class="section">
+    <label>จำนวนลูกแบดมินตันที่ใช้
+      <input type="number" id="shuttleCount" min="0" value="0">
+    </label>
+    <label>ราคาต่อ 1 ลูก (บาท)
+      <input type="number" id="shuttlePrice" min="0" value="0">
+    </label>
+  </div>
+
+  <div class="section">
+    <label>จำนวนสนามที่จอง
+      <input type="number" id="courtCount" min="0" value="0">
+    </label>
+    <label>ราคาต่อสนาม (บาท)
+      <input type="number" id="courtPrice" min="0" value="0">
+    </label>
+  </div>
+
+  <div class="section">
+    <label>จำนวนพนักงานบริษัท
+      <input type="number" id="empCount" min="0" value="0">
+    </label>
+  </div>
+
+  <div class="section">
+    <label>จำนวนบุคคลทั่วไป
+      <input type="number" id="nonEmpCount" min="0" value="0">
+    </label>
+  </div>
+
+  <div class="section">
+    <label>เงินสนับสนุนพนักงาน (บาท)
+      <input type="number" id="subsidyTotal" min="0" value="0">
+    </label>
+  </div>
+
+  <div class="section center">
+    <button id="calcBtn">คำนวณ</button>
+  </div>
+
+  <div class="results">
+    <div class="result"><span>รายจ่ายทั้งหมด:</span> <span id="totalExpense">0.00</span> บาท</div>
+    <div class="result"><span>ค่าใช้จ่ายต่อคนสำหรับบุคคลทั่วไป:</span> <span id="perHeadGeneral">0.00</span> บาท</div>
+    <div class="result"><span>ค่าใช้จ่ายต่อคนสำหรับพนักงานบริษัท:</span> <span id="perHeadEmp">0.00</span> บาท</div>
+    <div class="result"><span>เงินสนับสนุนคงเหลือ:</span> <span id="subsidyRemain">0.00</span> บาท</div>
+  </div>
+</div>
