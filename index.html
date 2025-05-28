@@ -21,6 +21,12 @@
   </div>
 
   <div class="section">
+    <label>ค่าจองสนามแบดมินตัน (บาท)
+      <input type="number" id="reservationFee" min="0" value="0">
+    </label>
+  </div>
+
+  <div class="section">
     <label>จำนวนพนักงานบริษัท
       <input type="number" id="empCount" min="0" value="0">
     </label>
@@ -132,12 +138,13 @@
     const shuttlePrice   = +document.getElementById('shuttlePrice').value;
     const courtCount     = +document.getElementById('courtCount').value;
     const courtPrice     = +document.getElementById('courtPrice').value;
+    const reservationFee = +document.getElementById('reservationFee').value;
     const empCount       = +document.getElementById('empCount').value;
     const nonEmpCount    = +document.getElementById('nonEmpCount').value;
     const subsidyTotal   = +document.getElementById('subsidyTotal').value;
 
     // Step 1: รายจ่ายทั้งหมด
-    const totalExpense = shuttleCount * shuttlePrice
+    const totalExpense = reservationFee + shuttleCount * shuttlePrice
                        + courtCount * courtPrice;
 
     // Step 2: ราคาต่อหัว (รวมทุกคน)
