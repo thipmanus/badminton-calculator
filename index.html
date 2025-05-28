@@ -1,3 +1,4 @@
+<!-- HTML (paste into CodePen HTML panel) -->
 <div class="container">
   <h1>คำนวณค่ากลุ่มแบดมินตัน</h1>
 
@@ -42,9 +43,123 @@
   </div>
 
   <div class="results">
-    <div class="result"><span>รายจ่ายทั้งหมด:</span> <span id="totalExpense">0.00</span> บาท</div>
-    <div class="result"><span>ค่าใช้จ่ายต่อคนสำหรับบุคคลทั่วไป:</span> <span id="perHeadGeneral">0.00</span> บาท</div>
-    <div class="result"><span>ค่าใช้จ่ายต่อคนสำหรับพนักงานบริษัท:</span> <span id="perHeadEmp">0.00</span> บาท</div>
-    <div class="result"><span>เงินสนับสนุนคงเหลือ:</span> <span id="subsidyRemain">0.00</span> บาท</div>
+    <div class="result"><span>รายจ่ายทั้งหมด:</span> <span id="totalExpense">0</span> บาท</div>
+    <div class="result"><span>ค่าใช้จ่ายต่อคนสำหรับบุคคลทั่วไป:</span> <span id="perHeadGeneral">0</span> บาท</div>
+    <div class="result"><span>ค่าใช้จ่ายต่อคนสำหรับพนักงานบริษัท:</span> <span id="perHeadEmp">0</span> บาท</div>
+    <div class="result"><span>เงินสนับสนุนคงเหลือ:</span> <span id="subsidyRemain">0</span> บาท</div>
   </div>
 </div>
+
+<style>
+  /* CSS (paste into CodePen CSS panel) */
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: sans-serif;
+    background: #f4f4f9;
+    color: #333;
+    padding: 1rem;
+  }
+  .container {
+    max-width: 480px;
+    margin: auto;
+    background: #fff;
+    padding: 1rem 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+  }
+  .section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .section label {
+    flex: 1 1 45%;
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9rem;
+  }
+  .section input {
+    margin-top: 0.3rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  .center {
+    justify-content: center;
+  }
+  button {
+    padding: 0.7rem 1.5rem;
+    font-size: 1rem;
+    background: #007bff;
+    color: #fff;
+    border:none;
+    border-radius:4px;
+    cursor:pointer;
+    transition: background 0.2s;
+  }
+  button:hover {
+    background: #0056b3;
+  }
+  .results {
+    margin-top: 1rem;
+    border-top: 1px solid #eee;
+    padding-top: 1rem;
+  }
+  .result {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.6rem;
+    font-size: 0.95rem;
+  }
+  @media (max-width: 400px) {
+    .section label { flex: 1 1 100%; }
+    button { width: 100%; }
+  }
+</style>
+
+<script>
+  // JS (paste into CodePen JS panel)
+  document.getElementById('calcBtn').addEventListener('click', () => {
+    const shuttleCount   = +document.getElementById('shuttleCount').value;
+    const shuttlePrice   = +document.getElementById('shuttlePrice').value;
+    const courtCount     = +document.getElementById('courtCount').value;
+    const courtPrice     = +document.getElementById('courtPrice').value;
+    const empCount       = +document.getElementById('empCount').value;
+    const nonEmpCount    = +document.getElementById('nonEmpCount').value;
+    const subsidyTotal   = +document.getElementById('subsidyTotal').value;
+
+    // Step 1: รายจ่ายทั้งหมด
+    const totalExpense = shuttleCount * shuttlePrice
+                       + courtCount * courtPrice;
+
+    // Step 2: ราคาต่อหัว (รวมทุกคน)
+    const totalPeople = empCount + nonEmpCount;
+    const perHead = totalPeople > 0 ? totalExpense / totalPeople : 0;
+
+    // Step 3: เงินสนับสนุนที่ใช้ (สูงสุดไม่เกิน subsidyTotal)
+    const supportUsedRaw = perHead * empCount;
+    const supportUsed = Math.min(supportUsedRaw, subsidyTotal);
+
+    // Step 4: เงินสนับสนุนคงเหลือ
+    const subsidyRemain = subsidyTotal - supportUsed;
+
+    // Step 5: ราคาต่อหัวสำหรับพนักงานหลังลด
+    const perHeadEmp = empCount > 0
+      ? (perHead * empCount - supportUsed) / empCount
+      : 0;
+
+    // Update UI (round to 2 decimals)
+    document.getElementById('totalExpense').textContent     = totalExpense.toFixed(2);
+    document.getElementById('perHeadGeneral').textContent   = perHead.toFixed(2);
+    document.getElementById('perHeadEmp').textContent       = perHeadEmp.toFixed(2);
+    document.getElementById('subsidyRemain').textContent    = subsidyRemain.toFixed(2);
+  });
+</script>
