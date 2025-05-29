@@ -1,304 +1,326 @@
 <!DOCTYPE html>
 <html lang="th">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>คำนวณค่าใช้จ่ายกลุ่มแบดมินตัน</title>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: sans-serif;
-        background: #f4f4f9;
-        color: #333;
-        padding: 1rem;
-      }
-      .container {
-        max-width: 480px;
-        margin: auto;
-        background: #fff;
-        padding: 1rem 1.5rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        text-align: center;
-        font-size: 1.4rem;
-        margin-bottom: 1rem;
-      }
-      .section {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-      }
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คำนวณค่าใช้จ่ายกลุ่มแบดมินตัน</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #f4f4f9;
+      color: #333;
+      padding: 1rem;
+    }
+
+    .container {
+      max-width: 480px;
+      margin: auto;
+      background: #fff;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .section {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .section label {
+      flex: 1 1 45%;
+      display: flex;
+      flex-direction: column;
+      font-size: 0.9rem;
+    }
+
+    .section input {
+      margin-top: 0.3rem;
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .center {
+      justify-content: center;
+    }
+
+    button {
+      padding: 0.7rem 1.5rem;
+      font-size: 1rem;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    /* Results table */
+    .results {
+      margin-top: 1rem;
+    }
+
+    .results-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .results-table td {
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #eee;
+    }
+
+    .results-table tr:nth-child(odd) {
+      background: #fafafa;
+    }
+
+    .results-table td:first-child {
+      font-weight: 600;
+      width: 65%;
+    }
+
+    .results-table td:nth-child(2) {
+      text-align: right;
+      width: 20%;
+    }
+
+    .results-table td:last-child {
+      width: 15%;
+    }
+
+    @media (max-width: 400px) {
       .section label {
-        flex: 1 1 45%;
-        display: flex;
-        flex-direction: column;
+        flex: 1 1 100%;
+      }
+
+      button {
+        width: 100%;
+      }
+
+      .results-table td {
+        padding: 0.5rem;
         font-size: 0.9rem;
       }
-      .section input {
-        margin-top: 0.3rem;
-        padding: 0.5rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1rem;
-      }
-      .center {
-        justify-content: center;
-      }
-      button {
-        padding: 0.7rem 1.5rem;
-        font-size: 1rem;
-        background: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background 0.2s;
-      }
-      button:hover {
-        background: #0056b3;
-      }
-      /* Results table */
-      .results {
-        margin-top: 1rem;
-      }
-      .results-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      .results-table td {
-        padding: 0.6rem 0.8rem;
-        border: 1px solid #eee;
-      }
-      .results-table tr:nth-child(odd) {
-        background: #fafafa;
-      }
-      .results-table td:first-child {
-        font-weight: 600;
-        width: 65%;
-      }
-      .results-table td:nth-child(2) {
-        text-align: right;
-        width: 20%;
-      }
-      .results-table td:last-child {
-        width: 15%;
-      }
-      @media (max-width: 400px) {
-        .section label {
-          flex: 1 1 100%;
-        }
-        button {
-          width: 100%;
-        }
-        .results-table td {
-          padding: 0.5rem;
-          font-size: 0.9rem;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <h1>คำนวณค่าใช้จ่ายกลุ่มแบดมินตัน</h1>
+    }
+  </style>
+</head>
 
-      <div class="section">
-        <label>
-          จำนวนลูกแบดมินตันที่ใช้
-          <input type="number" id="shuttleCount" min="0" value="0" />
-        </label>
-        <label>
-          ราคาต่อ 1 ลูก (บาท)
-          <input type="number" id="shuttlePrice" min="0" value="0" />
-        </label>
-      </div>
+<body>
+  <div class="container">
+    <h1>คำนวณค่าใช้จ่ายกลุ่มแบดมินตัน</h1>
 
-      <div class="section">
-        <label>
-          จำนวนชั่วโมงที่จอง
-          <input type="number" id="courtCount" min="0" value="0" />
-        </label>
-        <label>
-          ราคาสนามต่อชั่วโมง (บาท)
-          <input type="number" id="courtPrice" min="0" value="0" />
-        </label>
-      </div>
-
-      <div class="section">
-        <label>
-          ค่าจองสนามแบดมินตัน (บาท)
-          <input type="number" id="reservationFee" min="0" value="0" />
-        </label>
-      </div>
-
-      <div class="section">
-        <label>
-          จำนวนพนักงานบริษัท (คำนวณค่าลูกแบดมินตัน)
-          <input type="number" id="empCount" min="0" value="0" />
-        </label>
-        <label>
-          จำนวนพนักงานบริษัท (ไม่คำนวณค่าลูกแบดมินตัน)
-          <input type="number" id="empCountNotShuttle" min="0" value="0" />
-        </label>
-      </div>
-
-      <div class="section">
-        <label>
-          จำนวนบุคคลทั่วไป (คำนวณค่าลูกแบดมินตัน)
-          <input type="number" id="nonEmpCount" min="0" value="0" />
-        </label>
-        <label>
-          จำนวนบุคคลทั่วไป (ไม่คำนวณค่าลูกแบดมินตัน)
-          <input type="number" id="nonEmpCountNotShuttle" min="0" value="0" />
-        </label>
-      </div>
-
-      <div class="section">
-        <label>
-          เงินสนับสนุนพนักงาน (บาท)
-          <input type="number" id="subsidyTotal" min="0" value="0" />
-        </label>
-      </div>
-
-      <div class="section center">
-        <button id="calcBtn">คำนวณ</button>
-      </div>
-
-      <div class="results">
-        <table class="results-table">
-          <tr>
-            <td>รายจ่ายทั้งหมด</td>
-            <td id="totalExpense">0.00</td>
-            <td>บาท</td>
-          </tr>
-          <tr>
-            <td>ค่าใช้จ่ายต่อคน (บุคคลทั่วไป)</td>
-            <td id="perHeadGeneral">0.00</td>
-            <td>บาท</td>
-          </tr>
-          <tr id="rowGeneralNotShuttle">
-            <td>ค่าใช้จ่ายต่อคน (บุคคลทั่วไป ไม่คำนวณลูก)</td>
-            <td id="perHeadGeneralNotShuttle">0.00</td>
-            <td>บาท</td>
-          </tr>
-          <tr>
-            <td>ค่าใช้จ่ายต่อคน (พนง. คำนวณลูก)</td>
-            <td id="perHeadEmp">0.00</td>
-            <td>บาท</td>
-          </tr>
-          <!-- this row will be hidden if empCountNotShuttle === 0 -->
-          <tr id="rowEmpNotShuttle">
-            <td>ค่าใช้จ่ายต่อคน (พนง. ไม่คำนวณลูก)</td>
-            <td id="perHeadEmpNotShuttle">0.00</td>
-            <td>บาท</td>
-          </tr>
-          <tr>
-            <td>เงินสนับสนุนคงเหลือ</td>
-            <td id="subsidyRemain">0.00</td>
-            <td>บาท</td>
-          </tr>
-        </table>
-      </div>
+    <div class="section">
+      <label>
+        จำนวนลูกแบดมินตันที่ใช้
+        <input type="number" id="shuttleCount" min="0" value="0" />
+      </label>
+      <label>
+        ราคาต่อ 1 ลูก (บาท)
+        <input type="number" id="shuttlePrice" min="0" value="0" />
+      </label>
     </div>
 
-    <script>
-      document.getElementById("calcBtn").addEventListener("click", () => {
-        const shuttleCount = +document.getElementById("shuttleCount").value;
-        const shuttlePrice = +document.getElementById("shuttlePrice").value;
-        const courtCount = +document.getElementById("courtCount").value;
-        const courtPrice = +document.getElementById("courtPrice").value;
-        const reservationFee = +document.getElementById("reservationFee").value;
-        const empCount = +document.getElementById("empCount").value;
-        const empCountNotShuttle =
-          +document.getElementById("empCountNotShuttle").value;
-        const nonEmpCount = +document.getElementById("nonEmpCount").value;
-        const nonEmpCountNotShuttle = +document.getElementById(
-          "nonEmpCountNotShuttle"
-        ).value;
-        const subsidyTotal = +document.getElementById("subsidyTotal").value;
+    <div class="section">
+      <label>
+        จำนวนชั่วโมงที่จอง
+        <input type="number" id="courtCount" min="0" value="0" />
+      </label>
+      <label>
+        ราคาสนามต่อชั่วโมง (บาท)
+        <input type="number" id="courtPrice" min="0" value="0" />
+      </label>
+    </div>
 
-        const totalShuttleExpense = shuttleCount * shuttlePrice;
-        const totalExpenseNotShuttle = reservationFee + courtCount * courtPrice;
-        const totalExpense = totalShuttleExpense + totalExpenseNotShuttle;
+    <div class="section">
+      <label>
+        ค่าจองสนามแบดมินตัน (บาท)
+        <input type="number" id="reservationFee" min="0" value="0" />
+      </label>
+    </div>
 
-        const totalPeopleWithShuttle = empCount + nonEmpCount;
-        const totalPeopleAll =
-          empCount + empCountNotShuttle + nonEmpCount + nonEmpCountNotShuttle;
+    <div class="section">
+      <label>
+        จำนวนพนักงานบริษัท (คำนวณค่าลูกแบดมินตัน)
+        <input type="number" id="empCount" min="0" value="0" />
+      </label>
+      <label>
+        จำนวนพนักงานบริษัท (ไม่คำนวณค่าลูกแบดมินตัน)
+        <input type="number" id="empCountNotShuttle" min="0" value="0" />
+      </label>
+    </div>
 
-        const perHeadShuttle =
-          totalPeopleWithShuttle > 0
-            ? totalShuttleExpense / totalPeopleWithShuttle
-            : 0;
-        const perHeadNotShuttle =
-          totalPeopleAll > 0 ? totalExpenseNotShuttle / totalPeopleAll : 0;
-        const perHeadGeneral =
-          nonEmpCount > 0 ? perHeadShuttle + perHeadNotShuttle : 0;
-        const perHeadGeneralNotShuttle =
-          nonEmpCountNotShuttle > 0 ? perHeadNotShuttle : 0;
+    <div class="section">
+      <label>
+        จำนวนบุคคลทั่วไป (คำนวณค่าลูกแบดมินตัน)
+        <input type="number" id="nonEmpCount" min="0" value="0" />
+      </label>
+      <label>
+        จำนวนบุคคลทั่วไป (ไม่คำนวณค่าลูกแบดมินตัน)
+        <input type="number" id="nonEmpCountNotShuttle" min="0" value="0" />
+      </label>
+    </div>
 
-        const totalNonEmpExpense =
-          perHeadGeneral * nonEmpCount +
-          perHeadGeneralNotShuttle * nonEmpCountNotShuttle;
-        const totalEmpExpense = totalExpense - totalNonEmpExpense;
-        const totalEmpExpenseNotShuttle =
-          totalEmpExpense - perHeadShuttle * empCount;
-        const supportUsed = Math.min(totalEmpExpense, subsidyTotal);
-        const subsidyRemain = subsidyTotal - supportUsed;
+    <div class="section">
+      <label>
+        เงินสนับสนุนพนักงาน (บาท)
+        <input type="number" id="subsidyTotal" min="0" value="0" />
+      </label>
+    </div>
 
-        const totalEmpCount = empCount + empCountNotShuttle;
+    <div class="section center">
+      <button id="calcBtn">คำนวณ</button>
+    </div>
 
-        const supportPerHead =
-          totalEmpCount > 0 ? supportUsed / totalEmpCount : 0;
-        // Calculate per-head for employees not paying shuttle fee
-        const perHeadEmpNotShuttle =
-          empCountNotShuttle > 0
-            ? Math.max(
-                0,
-                totalEmpExpenseNotShuttle / totalEmpCount - supportPerHead
-              )
-            : 0;
+    <div class="results">
+      <table class="results-table">
+        <tr>
+          <td>รายจ่ายทั้งหมด</td>
+          <td id="totalExpense">0.00</td>
+          <td>บาท</td>
+        </tr>
+        <tr>
+          <td>ค่าใช้จ่ายต่อคน (บุคคลทั่วไป)</td>
+          <td id="perHeadGeneral">0.00</td>
+          <td>บาท</td>
+        </tr>
+        <tr id="rowGeneralNotShuttle">
+          <td>ค่าใช้จ่ายต่อคน (บุคคลทั่วไป ไม่คำนวณลูก)</td>
+          <td id="perHeadGeneralNotShuttle">0.00</td>
+          <td>บาท</td>
+        </tr>
+        <tr>
+          <td>ค่าใช้จ่ายต่อคน (พนง. คำนวณลูก)</td>
+          <td id="perHeadEmp">0.00</td>
+          <td>บาท</td>
+        </tr>
+        <!-- this row will be hidden if empCountNotShuttle === 0 -->
+        <tr id="rowEmpNotShuttle">
+          <td>ค่าใช้จ่ายต่อคน (พนง. ไม่คำนวณลูก)</td>
+          <td id="perHeadEmpNotShuttle">0.00</td>
+          <td>บาท</td>
+        </tr>
+        <tr>
+          <td>เงินสนับสนุนคงเหลือ</td>
+          <td id="subsidyRemain">0.00</td>
+          <td>บาท</td>
+        </tr>
+      </table>
+    </div>
+  </div>
 
-        // Calculate per-head for employees paying shuttle fee
-        const remainingEmpExpense =
-          totalEmpExpense - perHeadEmpNotShuttle * empCountNotShuttle;
+  <script>
+    document.getElementById("calcBtn").addEventListener("click", () => {
+      const shuttleCount = +document.getElementById("shuttleCount").value;
+      const shuttlePrice = +document.getElementById("shuttlePrice").value;
+      const courtCount = +document.getElementById("courtCount").value;
+      const courtPrice = +document.getElementById("courtPrice").value;
+      const reservationFee = +document.getElementById("reservationFee").value;
+      const empCount = +document.getElementById("empCount").value;
+      const empCountNotShuttle =
+        +document.getElementById("empCountNotShuttle").value;
+      const nonEmpCount = +document.getElementById("nonEmpCount").value;
+      const nonEmpCountNotShuttle = +document.getElementById(
+        "nonEmpCountNotShuttle"
+      ).value;
+      const subsidyTotal = +document.getElementById("subsidyTotal").value;
 
-        const perHeadEmp =
-          empCount > 0
-            ? Math.max(0, remainingEmpExpense / empCount - supportPerHead)
-            : 0;
+      const totalShuttleExpense = shuttleCount * shuttlePrice;
+      const totalExpenseNotShuttle = reservationFee + courtCount * courtPrice;
+      const totalExpense = totalShuttleExpense + totalExpenseNotShuttle;
 
-        // update values
-        document.getElementById("totalExpense").textContent =
-          totalExpense.toFixed(2);
-        document.getElementById("perHeadGeneral").textContent =
-          perHeadGeneral.toFixed(2);
-        document.getElementById("perHeadGeneralNotShuttle").textContent =
-          perHeadGeneralNotShuttle.toFixed(2);
-        document.getElementById("perHeadEmp").textContent =
-          perHeadEmp.toFixed(2);
-        document.getElementById("perHeadEmpNotShuttle").textContent =
-          perHeadEmpNotShuttle.toFixed(2);
-        document.getElementById("subsidyRemain").textContent =
-          subsidyRemain.toFixed(2);
+      const totalPeopleWithShuttle = empCount + nonEmpCount;
+      const totalPeopleAll =
+        empCount + empCountNotShuttle + nonEmpCount + nonEmpCountNotShuttle;
 
-        // hide/show the non-shuttle-employee row
-        const rowEmpNotShuttle = document.getElementById("rowEmpNotShuttle");
-        rowEmpNotShuttle.style.display = empCountNotShuttle === 0 ? "none" : "";
-        const rowGeneralNotShuttle = document.getElementById(
-          "rowGeneralNotShuttle"
-        );
-        rowGeneralNotShuttle.style.display =
-          nonEmpCountNotShuttle === 0 ? "none" : "";
-      });
+      const perHeadShuttle =
+        totalPeopleWithShuttle > 0
+          ? totalShuttleExpense / totalPeopleWithShuttle
+          : 0;
+      const perHeadNotShuttle =
+        totalPeopleAll > 0 ? totalExpenseNotShuttle / totalPeopleAll : 0;
+      const perHeadGeneral =
+        nonEmpCount > 0 ? perHeadShuttle + perHeadNotShuttle : 0;
+      const perHeadGeneralNotShuttle =
+        nonEmpCountNotShuttle > 0 ? perHeadNotShuttle : 0;
 
-      // on load, hide that row by default
-      document.getElementById("rowEmpNotShuttle").style.display = "none";
-      document.getElementById("rowGeneralNotShuttle").style.display = "none";
-    </script>
-  </body>
+      const totalNonEmpExpense =
+        perHeadGeneral * nonEmpCount +
+        perHeadGeneralNotShuttle * nonEmpCountNotShuttle;
+      const totalEmpExpense = totalExpense - totalNonEmpExpense;
+      const totalEmpExpenseNotShuttle =
+        totalEmpExpense - perHeadShuttle * empCount;
+      const supportUsed = Math.min(totalEmpExpense, subsidyTotal);
+      const subsidyRemain = subsidyTotal - supportUsed;
+
+      const totalEmpCount = empCount + empCountNotShuttle;
+
+      const supportPerHead =
+        totalEmpCount > 0 ? supportUsed / totalEmpCount : 0;
+      // Calculate per-head for employees not paying shuttle fee
+      const perHeadEmpNotShuttle =
+        empCountNotShuttle > 0
+          ? Math.max(
+            0,
+            totalEmpExpenseNotShuttle / totalEmpCount - supportPerHead
+          )
+          : 0;
+
+      // Calculate remaining employee expense after discount
+      const totalEmpExpenseWithDiscount = totalEmpExpense - supportUsed;
+      const remainingEmpExpense =
+        totalEmpExpenseWithDiscount -
+        perHeadEmpNotShuttle * empCountNotShuttle;
+
+      const perHeadEmp =
+        empCount > 0 ? Math.max(0, remainingEmpExpense / empCount) : 0;
+
+      // update values
+      document.getElementById("totalExpense").textContent =
+        totalExpense.toFixed(2);
+      document.getElementById("perHeadGeneral").textContent =
+        perHeadGeneral.toFixed(2);
+      document.getElementById("perHeadGeneralNotShuttle").textContent =
+        perHeadGeneralNotShuttle.toFixed(2);
+      document.getElementById("perHeadEmp").textContent =
+        perHeadEmp.toFixed(2);
+      document.getElementById("perHeadEmpNotShuttle").textContent =
+        perHeadEmpNotShuttle.toFixed(2);
+      document.getElementById("subsidyRemain").textContent =
+        subsidyRemain.toFixed(2);
+
+      // hide/show the non-shuttle-employee row
+      const rowEmpNotShuttle = document.getElementById("rowEmpNotShuttle");
+      rowEmpNotShuttle.style.display = empCountNotShuttle === 0 ? "none" : "";
+      const rowGeneralNotShuttle = document.getElementById(
+        "rowGeneralNotShuttle"
+      );
+      rowGeneralNotShuttle.style.display =
+        nonEmpCountNotShuttle === 0 ? "none" : "";
+    });
+
+    // on load, hide that row by default
+    document.getElementById("rowEmpNotShuttle").style.display = "none";
+    document.getElementById("rowGeneralNotShuttle").style.display = "none";
+  </script>
+</body>
+
 </html>
