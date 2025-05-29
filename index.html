@@ -149,8 +149,12 @@
 
       <div class="section">
         <label>
-          จำนวนบุคคลทั่วไป
+          จำนวนบุคคลทั่วไป (คำนวณค่าลูกแบดมินตัน)
           <input type="number" id="nonEmpCount" min="0" value="0" />
+        </label>
+        <label>
+          จำนวนบุคคลทั่วไป (ไม่คำนวณค่าลูกแบดมินตัน)
+          <input type="number" id="nonEmpCountNotShuttle" min="0" value="0" />
         </label>
       </div>
 
@@ -177,12 +181,18 @@
             <td id="perHeadGeneral">0.00</td>
             <td>บาท</td>
           </tr>
+          <tr id="rowGeneralNotShuttle">
+            <td>ค่าใช้จ่ายต่อคน (บุคคลทั่วไป ไม่คำนวณลูก)</td>
+            <td id="perHeadGeneralNotShuttle">0.00</td>
+            <td>บาท</td>
+          </tr>
           <tr>
             <td>ค่าใช้จ่ายต่อคน (พนง. คำนวณลูก)</td>
             <td id="perHeadEmp">0.00</td>
             <td>บาท</td>
           </tr>
-          <tr>
+          <!-- this row will be hidden if empCountNotShuttle === 0 -->
+          <tr id="rowEmpNotShuttle">
             <td>ค่าใช้จ่ายต่อคน (พนง. ไม่คำนวณลูก)</td>
             <td id="perHeadEmpNotShuttle">0.00</td>
             <td>บาท</td>
@@ -207,6 +217,9 @@
         const empCountNotShuttle =
           +document.getElementById("empCountNotShuttle").value;
         const nonEmpCount = +document.getElementById("nonEmpCount").value;
+        const nonEmpCountNotShuttle = +document.getElementById(
+          "nonEmpCountNotShuttle"
+        ).value;
         const subsidyTotal = +document.getElementById("subsidyTotal").value;
 
         const totalShuttleExpense = shuttleCount * shuttlePrice;
@@ -214,7 +227,8 @@
         const totalExpense = totalShuttleExpense + totalExpenseNotShuttle;
 
         const totalPeopleWithShuttle = empCount + nonEmpCount;
-        const totalPeopleAll = empCount + empCountNotShuttle + nonEmpCount;
+        const totalPeopleAll =
+          empCount + empCountNotShuttle + nonEmpCount + nonEmpCountNotShuttle;
 
         const perHeadShuttle =
           totalPeopleWithShuttle > 0
@@ -222,31 +236,69 @@
             : 0;
         const perHeadNotShuttle =
           totalPeopleAll > 0 ? totalExpenseNotShuttle / totalPeopleAll : 0;
-        const perHeadGeneral = perHeadShuttle + perHeadNotShuttle;
+        const perHeadGeneral =
+          nonEmpCount > 0 ? perHeadShuttle + perHeadNotShuttle : 0;
+        const perHeadGeneralNotShuttle =
+          nonEmpCountNotShuttle > 0 ? perHeadNotShuttle : 0;
 
-        const totalEmpExpense =
-          perHeadGeneral * empCount + perHeadNotShuttle * empCountNotShuttle;
+        const totalNonEmpExpense =
+          perHeadGeneral * nonEmpCount +
+          perHeadGeneralNotShuttle * nonEmpCountNotShuttle;
+        const totalEmpExpense = totalExpense - totalNonEmpExpense;
+        const totalEmpExpenseNotShuttle =
+          totalEmpExpense - empCount * perHeadShuttle;
         const supportUsed = Math.min(totalEmpExpense, subsidyTotal);
         const subsidyRemain = subsidyTotal - supportUsed;
 
         const totalEmpCount = empCount + empCountNotShuttle;
-        const perHeadEmpNotShuttle =
-          totalEmpCount > 0
-            ? (totalEmpExpense - supportUsed) / totalEmpCount
-            : 0;
-        const perHeadEmp = perHeadEmpNotShuttle + perHeadShuttle;
 
+        const supportPerHead =
+          totalEmpCount > 0 ? supportUsed / totalEmpCount : 0;
+        // Calculate per-head for employees not paying shuttle fee
+        const perHeadEmpNotShuttle =
+          empCountNotShuttle > 0
+            ? Math.max(
+                0,
+                totalEmpExpenseNotShuttle / empCountNotShuttle - supportPerHead
+              )
+            : 0;
+
+        // Calculate per-head for employees paying shuttle fee
+        const remainingEmpExpense =
+          totalEmpExpense - perHeadEmpNotShuttle * empCountNotShuttle;
+
+        const perHeadEmp =
+          empCount > 0
+            ? Math.max(0, remainingEmpExpense / empCount - supportPerHead)
+            : 0;
+
+        // update values
         document.getElementById("totalExpense").textContent =
           totalExpense.toFixed(2);
         document.getElementById("perHeadGeneral").textContent =
           perHeadGeneral.toFixed(2);
+        document.getElementById("perHeadGeneralNotShuttle").textContent =
+          perHeadGeneralNotShuttle.toFixed(2);
         document.getElementById("perHeadEmp").textContent =
           perHeadEmp.toFixed(2);
         document.getElementById("perHeadEmpNotShuttle").textContent =
           perHeadEmpNotShuttle.toFixed(2);
         document.getElementById("subsidyRemain").textContent =
           subsidyRemain.toFixed(2);
+
+        // hide/show the non-shuttle-employee row
+        const rowEmpNotShuttle = document.getElementById("rowEmpNotShuttle");
+        rowEmpNotShuttle.style.display = empCountNotShuttle === 0 ? "none" : "";
+        const rowGeneralNotShuttle = document.getElementById(
+          "rowGeneralNotShuttle"
+        );
+        rowGeneralNotShuttle.style.display =
+          nonEmpCountNotShuttle === 0 ? "none" : "";
       });
+
+      // on load, hide that row by default
+      document.getElementById("rowEmpNotShuttle").style.display = "none";
+      document.getElementById("rowGeneralNotShuttle").style.display = "none";
     </script>
   </body>
 </html>
